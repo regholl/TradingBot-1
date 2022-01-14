@@ -1,4 +1,5 @@
-import tradingsystem as TradingSystem
+from  tradingsystem import TradingSystem
+from  tradingsystem import AlpacaPaperSocket
 
 class PortfolioManagementSystem(TradingSystem):
 
