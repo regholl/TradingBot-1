@@ -1,0 +1,16 @@
+Tradebert ideas 
+
+Neural network trading bot that will trade stocks and crypto currency, and will improve with time based on combination of previous trades data and pulled from the internet. 
+
+Neural network should be able to speculate about the future price of an asset by a certain date and make purchasing decisions based on that prediction. If the prediction is proved to be incorrect or correct the algorithm should adjust its strategies appropriately 
+
+The bot should trade stocks and crypto currencies in four distinct ways 
+
+Stock & Crypto futures 
+Stock & Crypto options 
+Stock & Crypto long term  
+Stock & Crypto short term/day trading
+
+The bot should be able to transfer funds in between these accounts to help maximize profits, for instance if the bot makes a ridiculous amount in day trading on one day it should move a portion of those profits to the long term trading account.  
+
+ 
