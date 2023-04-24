@@ -12,5 +12,3 @@ Stock & Crypto long term 
 Stock & Crypto short term/day trading
 
 The bot should be able to transfer funds in between these accounts to help maximize profits, for instance if the bot makes a ridiculous amount in day trading on one day it should move a portion of those profits to the long term trading account.  
-
- 

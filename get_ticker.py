@@ -12,11 +12,11 @@ data = yf.download(ticker_symbol, start=start_date, end=end_date)
 
 # View the data
 print(data)
-```
 
-Similarly, we can obtain historical data on cryptocurrencies by passing the crypto ticker symbol to the `yf.Ticker()` function as shown:
 
-```
+# Similarly, we can obtain historical data on cryptocurrencies by passing the crypto ticker symbol to the `yf.Ticker()` function as shown:
+
+
 import yfinance as yf
 
 # Define crypto ticker symbol

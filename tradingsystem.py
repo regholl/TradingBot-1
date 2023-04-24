@@ -8,8 +8,8 @@ import logging
 import numpy as np
 import time
 
-# SEC_KEY = 'cWUIGDGGhGsqjSauMhgcviFr6dlGkQbTtNwXIoJO'  # Enter Your Secret Key Here
-# PUB_KEY = 'PKW31LNZNE7P9QCCI6MF'  # Enter Your Public Key Here
+# SEC_KEY = 'SEC_KEY'  # Enter Your Secret Key Here
+# PUB_KEY = 'PUB_KEY'  # Enter Your Public Key Here
 # # This is the base URL for paper trading
 # BASE_URL = 'https://paper-api.alpaca.markets'
 
@@ -40,11 +40,23 @@ class TradingSystem(ABC):
         thread.start()
 
     @abstractmethod
-    def place_buy_order(self):
+    def analyze_asset(self):
         pass
 
     @abstractmethod
-    def place_sell_order(self):
+    def market_buy(self):
+        pass
+
+    @abstractmethod
+    def market_sell(self):
+        pass
+    
+    @abstractmethod
+    def limit_buy(self):
+        pass
+    
+    @abstractmethod
+    def limit_sell(self): 
         pass
 
     @abstractmethod
