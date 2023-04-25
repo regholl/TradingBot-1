@@ -1,0 +1,13 @@
+threading
+configparser
+alpaca_trade_api 
+pandas
+numpy
+yfinance
+tensorflow
+keras 
+sklearn
+talib 
+mplfinance 
+matplotlib 
+ccxt
