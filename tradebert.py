@@ -46,6 +46,8 @@ class TradingSystem(ABC):
         pass
 
 
+
+
 class AlpacaSystem(TradingSystem):
 
     def analyze_asset(self):
