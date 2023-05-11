@@ -1,14 +1,17 @@
 import pandas as pd
+import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
 
 class AIPMDevelopment:
 
     def __init__(self):
         # Read your data in and split the dependent and independent
         data = pd.read_csv('IBM.csv')
-        X = data['Delta Close']
-        y = data.drop(['Delta Close'], axis=1)
+        X = data.drop(['Delta Close'], axis=1)
+        y = data['Delta Close']
 
         # Train test spit
         X_train, X_test, y_train, y_test = train_test_split(X, y)
@@ -17,7 +20,7 @@ class AIPMDevelopment:
         network = Sequential()
 
         # Create the structure of the neural network
-        network.add(Dense(1, input_shape=(1,), activation='tanh'))
+        network.add(Dense(1, input_shape=(X_train.shape[1],), activation='tanh'))
         network.add(Dense(3, activation='tanh'))
         network.add(Dense(3, activation='tanh'))
         network.add(Dense(3, activation='tanh'))
@@ -44,4 +47,5 @@ class AIPMDevelopment:
 
         # Save weights to HDF5
         network.save_weights("weights.h5")
+
 AIPMDevelopment()

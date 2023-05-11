@@ -1,10 +1,82 @@
 import threading
 import configparser
 from abc import ABC, abstractmethod
+import ccxt
+import pandas as pd
+import numpy as np
 
-# Your Abstract Parent Class remains the same
+
+class TechnicalIndicators(): 
+    def __init__(self):
+        pass
+
+    # Define function to calculate moving average
+    def moving_average(self, data, window):
+        '''Calculate the moving average of a given dataset.
+        
+        Args:
+            data (pandas.Series): The dataset to calculate the moving average for.
+            window (int): The size of the window to use for the moving average calculation.
+        
+        Returns:
+            pandas.Series: The moving average of the given dataset.
+        '''
+        weights = np.repeat(1.0, window)/window
+        smas = np.convolve(data, weights, 'valid')
+        return smas
+
+    # Define function to calculate relative strength index (RSI)
+    def relative_strength_index(self, data, window):
+        '''Calculate the relative strength index (RSI) of a given dataset.
+        
+        Args:
+            data (pandas.Series): The dataset to calculate the RSI for.
+            window (int): The size of the window to use for the RSI calculation.
+        
+        Returns:
+            pandas.Series: The RSI of the given dataset.
+        '''
+        delta = data.diff()
+        delta = delta[1:]
+        up, down = delta.copy(), delta.copy()
+        up[up < 0] = 0
+        down[down > 0] = 0
+        roll_up = up.rolling(window).mean()
+        roll_down = down.abs().rolling(window).mean()
+        rs = roll_up / roll_down
+        rsi = 100.0 - (100.0 / (1.0 + rs))
+        return rsi
+
+    # Define function to calculate stochastic oscillator
+    def stochastic_oscillator(self, high, low, close, n):
+        '''Calculate the stochastic oscillator of a given dataset.
+        
+        Args:
+            high (pandas.Series): The high values of the dataset.
+            low (pandas.Series): The low values of the dataset.
+            close (pandas.Series): The close values of the dataset.
+            n (int): The size of the window to use for the stochastic oscillator calculation.
+        
+        Returns:
+            pandas.Series: The stochastic oscillator of the given dataset.
+        '''
+        lowest_low = low.rolling(window=n).min()
+        highest_high = high.rolling(window=n).max()
+        k = 100 * (close - lowest_low)/(highest_high - lowest_low)
+        return k
+    
+    # Calculate the moving average convergence divergence of a given data series
+    def macd(self, data):
+        ema_12 = data.ewm(span=12, adjust=False).mean()
+        ema_26 = data.ewm(span=26, adjust=False).mean()
+        macd = ema_12 - ema_26
+        signal = macd.ewm(span=9, adjust=False).mean()
+        return macd, signal
+
+# Abstract Parent class
 class TradingSystem(ABC):
     def __init__(self, api, symbol, time_frame, system_id, system_label):
+        tech_indicators = TechnicalIndicators()
         api_key = 'YOUR_API_KEY'
         api_secret = 'YOUR_API_SECRET'
 
@@ -51,7 +123,7 @@ class TradingSystem(ABC):
 class AlpacaSystem(TradingSystem):
 
     def analyze_asset(self):
-        # Implement your analyze_asset logic here
+        # Implement analyze_asset logic here
         pass
 
     def market_buy(self, qty):
@@ -97,13 +169,13 @@ class AlpacaSystem(TradingSystem):
         return order
 
     def system_loop(self):
-        # Implement your system_loop logic here
+        # Implement system_loop logic here
         pass
 
 class Binance(TradingSystem):
 
     def analyze_asset(self):
-        # Implement your analyze_asset logic here
+        # Implement analyze_asset logic here
         pass
 
     # Function to perform market buy
@@ -127,5 +199,5 @@ class Binance(TradingSystem):
         return order
 
     def system_loop(self):
-        # Implement your system_loop logic here
+        # Implement system_loop logic here
         pass
