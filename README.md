@@ -203,7 +203,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@@yalt7117](https://twitter.com/@yalt7117) - drbailey117@gmail.com@drbailey117@gmail.com_client.com
+Dalton Bailey- [@yalt7117](https://twitter.com/@yalt7117) - drbailey117@gmail.com
 
 Project Link: [https://github.com/Yalton/TradingBot](https://github.com/Yalton/TradingBot)
 
