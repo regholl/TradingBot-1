@@ -11,3 +11,7 @@ talib
 mplfinance 
 matplotlib 
 ccxt
+hmmlearn
+requests
+beautifulsoup4
+abc

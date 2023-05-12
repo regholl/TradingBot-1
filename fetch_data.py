@@ -129,17 +129,10 @@ class dataggregator():
             download_yahoo_finance_data(symbol)
             print('Data download completed successfully!')
     
-    def fetchYfinanceAPI(self, asset_symbol, start_date, end_date):
-
-        # # Define crypto ticker symbol
-        # asset_symbol = 'BTC-USD'
-
-        # # Define date range
-        # start_date = '2019-01-01'
-        # end_date = '2022-12-31'
+    def fetchYfinanceAPI(self,symbol, start_date, end_date):
 
         # Fetch data from yahoo finance API for Cryptocurrency
-        crypto_data = yf.download(asset_symbol, start=start_date, end=end_date)
+        crypto_data = yf.download(symbol, start=start_date, end=end_date)
 
         # View the data
         print(crypto_data)

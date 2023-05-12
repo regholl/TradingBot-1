@@ -7,6 +7,8 @@ from sklearn.metrics import classification_report
 
 class AIPMDevelopment:
 
+    # Simple feedforward neural network
+    
     def __init__(self):
         # Read your data in and split the dependent and independent
         data = pd.read_csv('IBM.csv')
