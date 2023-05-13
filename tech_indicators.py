@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import ccxt
 import pandas as pd
 import numpy as np
+import mplfinance as mpf
 
 class TechnicalIndicators(): 
     def __init__(self):

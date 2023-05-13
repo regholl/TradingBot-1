@@ -5,7 +5,29 @@ from keras.layers import LSTM, Dense, Dropout, SimpleRNN
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from hmmlearn.hmm import GaussianHMM
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
+
+
+def preProcess(data):
+    # Check for NaN values
+    print(data.isnull().sum())
+
+    # Drop rows with NaN values
+    data = data.dropna()
+
+    # Create a scaler
+    scaler = MinMaxScaler(feature_range=(0, 1))
+
+    # Only include numerical columns in the data that you pass to the scaler
+    numerical_columns = data.select_dtypes(include=[np.number]).columns
+
+    # Fit the scaler to your data and transform it
+    data[numerical_columns] = scaler.fit_transform(data[numerical_columns])
+
+    data = data.select_dtypes(exclude=['object'])
+
+    return data
 
 class LinearRegressor(): 
 
@@ -13,10 +35,13 @@ class LinearRegressor():
         self.model = Sequential()
 
     def train(self, data): 
-        X = data.drop(['Delta Close'], axis=1)
-        y = data['Delta Close']
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y)
+        data = preProcess(data)
+
+        X = data.drop(['Close'], axis=1)
+        y = data['Close']
+
+        X_train, X_test, Y_train, Y_test = train_test_split(X, y)
 
         self.model.add(Dense(1, input_shape=(X_train.shape[1],), activation='tanh'))
         self.model.add(Dense(3, activation='tanh'))
@@ -30,7 +55,15 @@ class LinearRegressor():
                       metrics=['accuracy']
                       )
 
-        self.model.fit(X_train.values, y_train.values, epochs=100)
+        X_train = X_train.values.astype('float32')
+        Y_train = Y_train.values.astype('float32')
+        self.model.fit(X_train, Y_train, epochs=100)
+
+        # Evaluate the model
+        test_loss, test_mae = self.model.evaluate(X_test, Y_test)
+
+        print('Test loss:', test_loss)
+        print('Test MAE:', test_mae)
 
         self.model.save('models/LinearRegressor.h5')
 
@@ -44,6 +77,9 @@ class RNN():
         self.model = Sequential()
 
     def train(self, data): 
+        
+        data = preProcess(data)
+
         prices = data['Close'].values.reshape(-1, 1)
 
         scaler = MinMaxScaler(feature_range=(0, 1))
@@ -54,8 +90,8 @@ class RNN():
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
-        X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
-        X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
+        X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+        X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
         self.model.add(SimpleRNN(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
         self.model.add(Dropout(0.2))
@@ -63,13 +99,71 @@ class RNN():
         self.model.add(Dropout(0.2))
         self.model.add(Dense(1))
 
-        self.model.compile(loss='mean_squared_error', optimizer='adam')
+        self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
         self.model.fit(X_train, Y_train, epochs=100, batch_size=32)
+
+        # Evaluate the model
+        test_loss, test_mae = self.model.evaluate(X_test, Y_test)
+
+        print('Test loss:', test_loss)
+        print('Test MAE:', test_mae)
 
         self.model.save('models/RNN.h5')
 
     def predict(self, X): 
         self.model = load_model('models/RNN.h5')
+        predictions = self.model.predict(X)
+        return predictions
+    
+    @staticmethod
+    def create_dataset(dataset, look_back=1):
+        X, Y = [], []
+        for i in range(len(dataset)-look_back-1):
+            a = dataset[i:(i+look_back), 0]
+            X.append(a)
+            Y.append(dataset[i + look_back, 0])
+        return np.array(X), np.array(Y)
+
+class LSTMModel(): 
+    def __init__(self): 
+        self.model = Sequential()
+
+    def train(self, data):
+        data = preProcess(data)
+        prices = data['Close'].values.reshape(-1, 1)
+
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        prices = scaler.fit_transform(prices)
+
+        look_back = 10
+        X, Y = self.create_dataset(prices, look_back)
+
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+
+        X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+        X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+
+        self.model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
+        self.model.add(Dropout(0.2))
+        self.model.add(LSTM(units=50))
+        self.model.add(Dropout(0.2))
+        self.model.add(Dense(1))
+
+        self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
+        self.model.fit(X_train, Y_train, epochs=100, batch_size=32)
+
+
+        # Evaluate the model
+        test_loss, test_mae = self.model.evaluate(X_test, Y_test)
+
+        print('Test loss:', test_loss)
+        print('Test MAE:', test_mae)
+
+        self.model.save('models/LSTM.h5')
+
+    def predict(self, X): 
+        self.model = load_model('models/LSTM.h5')
         predictions = self.model.predict(X)
         return predictions
 
@@ -82,60 +176,13 @@ class RNN():
             Y.append(dataset[i + look_back, 0])
         return np.array(X), np.array(Y)
 
-class LSTM(): 
-    def __init__(self): 
-       
-        self.model = Sequential()
-
-    def train(self, data):
-        prices = data['Close'].values.reshape(-1, 1)
-
-        scaler = MinMaxScaler(feature_range=(0, 1))
-        prices = scaler.fit_transform(prices)
-
-        look_back = 10
-        X, Y = self.create_dataset(prices, look_back)
-
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
-
-        X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
-        X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
-
-        self.model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], 1)))
-        self.model.add(Dropout(0.2))
-        self.model.add(LSTM(units=50))
-        self.model.add(Dropout(0.2))
-        self.model.add(Dense(1))
-
-        self.model.compile(loss='mean_squared_error', optimizer='adam')
-        self.model.fit(X_train, Y_train, epochs=100, batch_size=32)
-
-        self.model.save('models/LSTM.h5')
-
-    def predict(self, X): 
-        self.model = load_model('models/LSTM.h5')
-        predictions = self.model.predict(X)
-        return predictions
-
-    # @staticmethod
-    # def create_dataset(dataset, look_back=1):
-    #     X, Y = [], []
-    #     for i in range(len(dataset)-look_back-1):
-    #         a = dataset[i:(i+look_back), 0]
-    #         X.append(a)
-    #         Y.append(dataset[i + look_back, 0])
-    #     return np.array(X), np.array(Y)
-
-
-
 class HMM: 
 
     def __init__(self): 
         self.model = None
 
     def train(self, data): 
-        # Fetch data from yahoo finance API
-        # data = yf.download(ticker, start=start_date, end=end_date)
+        data = preProcess(data)
 
         # Extract the Close column
         close_data = data[["Close"]].values

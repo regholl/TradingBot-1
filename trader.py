@@ -8,8 +8,8 @@ import numpy as np
 import time
 
 
-SEC_KEY = 'cWUIGDGGhGsqjSauMhgcviFr6dlGkQbTtNwXIoJO'  # Enter Your Secret Key Here
-PUB_KEY = 'PKW31LNZNE7P9QCCI6MF'  # Enter Your Public Key Here
+# SEC_KEY = 'cWUIGDGGhGsqjSauMhgcviFr6dlGkQbTtNwXIoJO'  # Enter Your Secret Key Here
+# PUB_KEY = 'PKW31LNZNE7P9QCCI6MF'  # Enter Your Public Key Here
 # This is the base URL for paper trading
 BASE_URL = 'https://paper-api.alpaca.markets'
 # For real trading, don't enter a base_url

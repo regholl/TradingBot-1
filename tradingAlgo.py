@@ -107,7 +107,6 @@ def lstm_prediction(pred_date, symbol):
 
     X_test = np.array(X_test)
 
-
     X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
 

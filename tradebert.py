@@ -6,9 +6,12 @@ import pandas as pd
 import numpy as np
 import configparser
 import tech_indicators as TechInd
+import logging
 import fetch_data as fetchData
 
-
+Log_Format = "%(levelname)s %(asctime)s - %(message)s"
+logging.basicConfig(filename = "logs/logfile.log", filemode = "w", format = Log_Format,level = logging.DEBUG)
+logger = logging.getLogger()
 
 # Abstract Parent class
 class TradingSystem(ABC):
@@ -63,6 +66,11 @@ class TradingSystem(ABC):
 
 class AlpacaSystem(TradingSystem):
 
+    def __init__(self, api, symbol, time_frame, system_id, system_label):
+        super().__init__(api, symbol, time_frame, system_id, system_label)
+        self.data_fetcher = fetch_data.FetchData()
+        self.tech_indicators = tech_indicators.TechIndicators()
+
     def analyze_asset(self):
         # Implement analyze_asset logic here
         pass
@@ -113,7 +121,11 @@ class AlpacaSystem(TradingSystem):
         # Implement system_loop logic here
         pass
 
-class Binance(TradingSystem):
+class BinanceSystem(TradingSystem):
+    def __init__(self, api, symbol, time_frame, system_id, system_label):
+        super().__init__(api, symbol, time_frame, system_id, system_label)
+        self.data_fetcher = fetch_data.FetchData()
+        self.tech_indicators = tech_indicators.TechIndicators()
 
     def analyze_asset(self):
         # Implement analyze_asset logic here
